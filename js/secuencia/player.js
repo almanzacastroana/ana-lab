@@ -95,22 +95,30 @@
           el("p", { class: "note", text: `Apartados: ${s.subs}. Ten a mano tu ficha (${s.id}).` }));
       case "idea":
         return el("section", { class: "idea" }, p.sub ? el("p", { class: "eyebrow", text: p.sub }) : null, el("h2", { text: p.tit }),
-          p.clave ? el("p", { class: "clave" }, t("span", p.clave)) : null,
-          p.txt ? t("p", p.txt) : null,
-          p.puntos ? el("ul", { class: "puntos" }, p.puntos.map(x => t("li", x))) : null,
-          p.svg ? el("div", { class: "figura", html: p.svg, role: "img", "aria-label": p.alt || p.tit }) : null,
-          p.img ? el("div", { class: "img-pend", text: `[Imagen pendiente: ${p.img}]` }) : null,
-          p.ficha ? marcaFicha(p.ficha, p.fichaTxt) : null);
+          conFoto(p, [ideaClave(p.clave),
+            p.txt ? t("p", p.txt) : null,
+            p.puntos ? el("ul", { class: "puntos" }, p.puntos.map(x => t("li", x))) : null,
+            p.svg ? el("div", { class: "figura", html: p.svg, role: "img", "aria-label": p.alt || p.tit }) : null,
+            p.ficha ? marcaFicha(p.ficha, p.fichaTxt) : null]));
+      case "explica":
+        return el("section", { class: "idea explica" }, p.sub ? el("p", { class: "eyebrow", text: p.sub }) : null, el("h2", { text: p.tit }),
+          conFoto(p, [p.lead ? t("p", p.lead, { class: "lead" }) : null,
+            ...String(p.txt || "").split(/\n\n+/).filter(Boolean).map(x => t("p", x)),
+            p.puntos ? el("ul", { class: "puntos" }, p.puntos.map(x => t("li", x))) : null,
+            ideaClave(p.clave), p.ficha ? marcaFicha(p.ficha, p.fichaTxt) : null]));
+      case "documento":
+        return documento(p);
       case "tabla":
         return el("section", { class: "idea" }, el("h2", { text: p.tit }), p.txt ? t("p", p.txt) : null,
+          p.fotos ? el("div", { class: "fotos" }, p.fotos.map(figura)) : null,
           el("table", { class: "tabla" }, el("thead", {}, el("tr", {}, p.cab.map(c => el("th", { text: c })))),
             el("tbody", {}, p.filas.map(f => el("tr", {}, f.map((c, i) => t("td", c, { "data-h": p.cab[i] })))))),
           p.nota ? t("p", p.nota, { class: "note" }) : null, p.ficha ? marcaFicha(p.ficha, p.fichaTxt) : null);
       case "ejemplo":
-        return el("section", { class: "caja-ej" }, el("p", { class: "eyebrow", text: "Ejemplo profesional" }), el("h2", { text: p.tit }), t("p", p.txt),
-          p.puntos ? el("ul", { class: "puntos" }, p.puntos.map(x => t("li", x))) : null, p.ficha ? marcaFicha(p.ficha, p.fichaTxt) : null);
+        return el("section", { class: "caja-ej" }, el("p", { class: "eyebrow", text: "Ejemplo profesional" }), el("h2", { text: p.tit }),
+          conFoto(p, [t("p", p.txt), p.puntos ? el("ul", { class: "puntos" }, p.puntos.map(x => t("li", x))) : null, p.ficha ? marcaFicha(p.ficha, p.fichaTxt) : null]));
       case "ojo":
-        return el("section", { class: "caja-ojo" }, el("p", { class: "eyebrow", text: "Ojo con…" }), el("h2", { text: p.tit || "El error típico" }), t("p", p.txt));
+        return el("section", { class: "caja-ojo" }, el("p", { class: "eyebrow", text: "Ojo con…" }), el("h2", { text: p.tit || "El error típico" }), conFoto(p, [t("p", p.txt)]));
       case "pregunta":
         return el("section", { class: "caja-preg" }, el("p", { class: "eyebrow", text: "Para pensar en clase" }), el("h2", { text: p.tit }), p.txt ? t("p", p.txt) : null,
           p.revelar ? revelar(p.revelar) : null);
@@ -161,6 +169,49 @@
       default:
         return el("p", { text: "Pantalla desconocida." });
     }
+  }
+
+  // Recuadro «Idea clave», como en la presentación antigua.
+  function ideaClave(txt) {
+    return txt ? el("p", { class: "clave" }, el("span", { class: "clave-l", text: "Idea clave" }), t("span", txt)) : null;
+  }
+  // Una foto con su pie, o varias en fila. Con imagen, el texto va al lado (ordenador) o debajo (móvil).
+  function figura(f) {
+    return el("figure", { class: "foto" }, el("img", { src: f.src, alt: f.alt, loading: "lazy", width: "600", height: "400" }), f.pie ? t("figcaption", f.pie) : null);
+  }
+  function conFoto(p, cuerpo) {
+    const figs = p.foto ? figura(p.foto) : p.fotos ? el("div", { class: "fotos" }, p.fotos.map(figura)) : null;
+    if (!figs) return cuerpo;
+    if (p.fotos && p.fotos.length > 2) { figs.classList.add("tira"); return [...cuerpo, figs]; } // tres o más: en fila, bajo el texto
+    return el("div", { class: "duo" }, el("div", { class: "duo-txt" }, cuerpo), el("div", { class: "duo-fig" }, figs));
+  }
+  // Pantalla «documento»: un vale, un albarán o una etiqueta con sus partes numeradas, que se explican una a una.
+  function documento(p) {
+    const notas = p.notas || [];
+    const d = Object.assign({}, p.doc, { marcas: {} });
+    notas.forEach((n, i) => { d.marcas[n.k] = i + 1; });
+    const papel = AL.doc[p.doc.tipo](d);
+    const items = notas.map((n, i) => el("li", { class: "doc-nota", hidden: true },
+      el("span", { class: "doc-marca", text: String(i + 1), "aria-hidden": "true" }), el("div", {}, el("strong", { text: n.tit }), n.txt ? t("p", n.txt) : null)));
+    let vistas = 0;
+    const sig = el("button", { type: "button", class: "btn btn-primario" });
+    const todo = el("button", { type: "button", class: "btn btn-sec", text: "Verlo todo" });
+    const pinta = () => {
+      items.forEach((li, i) => { li.hidden = i >= vistas; });
+      papel.querySelectorAll(".doc-marca").forEach(m => {
+        const n = parseInt(m.getAttribute("data-n"), 10);
+        m.classList.remove("activa", "apagada");
+        if (n === vistas) m.classList.add("activa"); else if (n > vistas) m.classList.add("apagada");
+      });
+      if (vistas >= notas.length) { sig.hidden = true; todo.hidden = true; } else sig.textContent = `Explicar la parte ${vistas + 1} de ${notas.length}`;
+    };
+    sig.addEventListener("click", () => { vistas++; pinta(); });
+    todo.addEventListener("click", () => { vistas = notas.length; pinta(); });
+    pinta();
+    return el("section", { class: "idea documento" }, p.sub ? el("p", { class: "eyebrow", text: p.sub }) : null, el("h2", { text: p.tit }), p.txt ? t("p", p.txt) : null,
+      el("div", { class: "duo doc-duo" }, el("div", {}, papel),
+        el("div", {}, notas.length ? el("div", { class: "doc-acciones" }, sig, todo) : null, el("ol", { class: "doc-notas", "aria-live": "polite" }, items),
+          ideaClave(p.clave), p.ficha ? marcaFicha(p.ficha, p.fichaTxt) : null)));
   }
 
   function marcaFicha(ref, txt, grande) {

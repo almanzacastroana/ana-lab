@@ -9,9 +9,9 @@ for f in js/secuencia/*.js js/juegos/*.js "$TEMA"/datos/*.js; do
   printf "checkSyntax('%s')\n" "$f" > "${TMPDIR:-/tmp}/analab-cs.js"
   "$JSC" "${TMPDIR:-/tmp}/analab-cs.js"
 done
-"$JSC" tests/dom-minimo.js js/secuencia/core.js js/secuencia/generadores.js js/secuencia/retos.js \
+"$JSC" tests/dom-minimo.js js/secuencia/core.js js/secuencia/generadores.js js/secuencia/retos.js js/secuencia/documentos.js \
   "$TEMA"/datos/banco.js "$TEMA"/datos/sesiones.js js/secuencia/player.js tests/secuencia.test.js
-"$JSC" tests/dom-minimo.js js/secuencia/core.js js/secuencia/generadores.js js/secuencia/retos.js \
+"$JSC" tests/dom-minimo.js js/secuencia/core.js js/secuencia/generadores.js js/secuencia/retos.js js/secuencia/documentos.js \
   "$TEMA"/datos/banco.js js/juegos/semana.js tests/juegos.test.js
-"$JSC" tests/dom-minimo.js js/secuencia/core.js js/secuencia/generadores.js js/secuencia/retos.js \
+"$JSC" tests/dom-minimo.js js/secuencia/core.js js/secuencia/generadores.js js/secuencia/retos.js js/secuencia/documentos.js \
   "$TEMA"/datos/banco.js js/juegos/entrena.js tests/entrena.test.js
