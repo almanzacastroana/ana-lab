@@ -1,0 +1,35 @@
+/* ANA LAB · Tokens de diseño (fuente: prototipo/guia-visual.html) */
+
+@font-face { font-family: "Bricolage Grotesque"; src: url("../assets/fonts/bricolage-grotesque.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+@font-face { font-family: "Atkinson Hyperlegible"; src: url("../assets/fonts/atkinson-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Atkinson Hyperlegible"; src: url("../assets/fonts/atkinson-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Atkinson Hyperlegible"; src: url("../assets/fonts/atkinson-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "JetBrains Mono"; src: url("../assets/fonts/jetbrains-mono-500.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "JetBrains Mono"; src: url("../assets/fonts/jetbrains-mono-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+
+:root {
+  /* Base editorial */
+  --ink: #121A2B;
+  --ink-2: #3A4458;
+  --ink-3: #5B6478;
+  --paper: #F6F4EF;
+  --surface: #FFFFFF;
+  --line: #DAD6CC;
+  /* Ecosistema */
+  --hl-green: #3F7A12;        /* texto/acento sobre claro (AA) */
+  --hl-green-bright: #8DC63F; /* solo decorativo o sobre oscuro */
+  --hl-blue: #0B5FA5;
+  /* Módulos */
+  --m3038: #A4480C;  /* Bar y cafetería · cobre */
+  --m3038-soft: #F1ECE6;
+  /* Retroalimentación */
+  --ok: #13703A;  --ok-bg: #E4F4E9;
+  --ko: #B3261E;  --ko-bg: #FCE8E6;
+  --tip: #8A5A00; --tip-bg: #FFF3D6;
+
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(18,26,43,.06), 0 6px 20px rgba(18,26,43,.07);
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
