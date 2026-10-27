@@ -13,8 +13,9 @@ window.CATALOGO = {
       color: "var(--m3038)",
       url: "modulos/3038/",
       temas: [
-        { n: 1, titulo: "Acopio y distribución de géneros en el área de bar", ra: ["RA1"], estado: "preparacion",
-          resumen: "El viaje del género: del pedido a su sitio en la barra, en buen estado y listo para el servicio." },
+        { n: 1, titulo: "Acopio y distribución de géneros en el área de bar", ra: ["RA1"], estado: "listo",
+          resumen: "El viaje del género: del pedido a su sitio en la barra, en buen estado y listo para el servicio.",
+          materiales: { clase: "t1/clase/", juegos: "t1/juegos/", ficha: "t1/ficha/" } },
         { n: 2, titulo: "Equipos, útiles y menaje", ra: [], estado: "pendiente" },
         { n: 3, titulo: "Bebidas", ra: [], estado: "pendiente" },
         { n: 4, titulo: "Comidas rápidas", ra: [], estado: "pendiente" },

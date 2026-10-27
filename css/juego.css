@@ -1,0 +1,48 @@
+/* ANA LAB · Juegos: modo oscuro de la guía visual. Las tarjetas de reto siguen claras para leer bien. */
+body.juego { background: #0E1422; color: #E8ECF4; }
+body.juego a { color: #9CC7F0; }
+.juego-main { max-width: 760px; margin: 0 auto; padding: calc(16px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+.juego-main h1, .juego-main h2 { color: #fff; }
+.juego-main .note, .juego-main .ayuda { color: #B6BFD0; }
+.juego-hero { padding: 12px 0 8px; }
+.juego-hero h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: .3em; }
+.juego-hero .eyebrow, .juego-main .eyebrow { color: #8DC63F; }
+.juego-hero p { color: #C9CFDB; font-size: 1.05rem; }
+.juego-reglas, .dia-intro, .dominio { background: #18213A; border-radius: var(--radius); padding: 16px 18px; margin: 14px 0; }
+.juego-reglas ol { padding-left: 1.3em; } .juego-reglas li { margin: .35em 0; }
+.juego-volver { display: inline-flex; min-height: 44px; align-items: center; font: 700 .9rem var(--font-mono); text-decoration: none; }
+
+.hud { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; margin-bottom: 14px; background: #18213A; border-radius: 12px; }
+.hud-t { display: flex; flex-direction: column; } .hud-t strong { font: 800 1.05rem var(--font-display); color: #fff; }
+.hud-stats { display: flex; gap: 8px; }
+.stat { background: #0E1422; border-radius: 10px; padding: 6px 10px; font: 700 .95rem var(--font-mono); color: #fff; }
+.stat em { font-style: normal; color: #8F9AB2; font-weight: 500; margin-right: 6px; font-size: .8rem; }
+
+/* Las filas y retos son tarjetas claras sobre el fondo oscuro */
+body.juego .rec-fila, body.juego .ordenar-item, body.juego .reto { background: var(--surface); color: var(--ink); }
+body.juego .rec-fila.bien { background: var(--ok-bg); } body.juego .rec-fila.mal { background: var(--ko-bg); }
+body.juego .fb { color: var(--ink); }
+body.juego .btn-sec { color: #fff; border-color: #fff; }
+body.juego .btn-primario { background: #8DC63F; color: var(--ink); }
+body.juego .paso-n { color: #8F9AB2; }
+body.juego .fase-tit { color: #fff; }
+.rec-nums.cuatro { grid-template-columns: repeat(4, 1fr); }
+.rec-nums .peq { font-size: .95rem; }
+.defecto { margin: 0 0 8px; padding: 6px 10px; border-radius: 8px; background: var(--tip-bg); color: var(--tip); font-weight: 700; font-size: .92rem; }
+.defecto.ok { background: #EEF3E6; color: var(--ok); }
+.estrellas { font-size: 2rem; letter-spacing: 4px; color: #F0B98F; margin: 4px 0 12px; }
+body.juego .marcador { color: #fff; } body.juego .marcador strong { color: #8DC63F; }
+body.juego .tabla td, body.juego .tabla th { border-color: #2A3553; }
+body.juego .tabla tr { background: transparent; }
+@media (max-width: 719px) { body.juego .tabla tr { background: #18213A; box-shadow: none; } body.juego .tabla td::before { color: #8F9AB2; } }
+.meter { height: 12px; background: #0E1422; border-radius: 999px; overflow: hidden; margin: 8px 0; }
+.meter > i { display: block; height: 100%; background: #8DC63F; border-radius: 999px; }
+
+.juegos-lista { display: grid; gap: 12px; margin: 16px 0; }
+.juego-card { display: block; text-decoration: none; background: #18213A; border-radius: var(--radius); padding: 18px; border-left: 6px solid #8DC63F; color: #E8ECF4 !important; }
+.juego-card h2 { margin: 0 0 6px; font-size: 1.35rem; }
+.juego-card p { margin: 0; color: #C9CFDB; }
+.juego-card .eyebrow { margin-bottom: 6px; }
+@media (hover: hover) { .juego-card:hover { background: #1E2A48; } }
+
+.juego-main section { padding-block: 0; border-top: 0; }

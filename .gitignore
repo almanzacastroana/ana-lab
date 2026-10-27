@@ -1,3 +1,6 @@
 .DS_Store
 ~$*
 *.xlsx
+
+# Modo docente: solo en Drive, nunca se publica
+notas-docente.js

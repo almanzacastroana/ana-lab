@@ -17,3 +17,5 @@ Cada imagen se registra aquí con su origen: foto propia, licencia libre (autor,
 | Archivo | Origen | Licencia / notas |
 |---|---|---|
 | `img/favicon.svg` | Diseño propio de ANA LAB | — |
+| `modulos/3038/t1/img/*.jpg` (12 ilustraciones: productos con y sin defectos, posturas de carga) | Generadas con IA (Codex, generación de imágenes) el 27/10/2026 en una sola lámina y recortadas | Uso propio en ANA LAB. Sin personas reconocibles (figuras sin rostro). Lámina original en Drive: `3038/TEMA_1/img/codex/lamina_t1.png` |
+| Esquema de las zonas de la barra (SVG en `modulos/3038/t1/datos/sesiones.js`) | Diseño propio de ANA LAB | — |
