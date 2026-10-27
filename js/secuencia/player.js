@@ -93,13 +93,19 @@
           el("h2", { text: s.titulo }),
           el("div", { class: "objetivo" }, el("p", { class: "eyebrow", text: "Al terminar, serás capaz de…" }), t("p", s.objetivo)),
           el("p", { class: "note", text: `Apartados: ${s.subs}. Ten a mano tu ficha (${s.id}).` }));
-      case "idea":
+      case "idea": {
+        const zf = p.zonas ? fotoZonas(p.zonas) : null;
+        const lis = (p.puntos || []).map((x, i) => zf
+          ? t("li", x, { class: "zona-li", role: "button", tabindex: "0", onclick: () => zf.ir(i), onkeydown: e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); zf.ir(i); } } })
+          : t("li", x));
+        if (zf) zf.lis = lis;
         return el("section", { class: "idea" }, p.sub ? el("p", { class: "eyebrow", text: p.sub }) : null, el("h2", { text: p.tit }),
           conFoto(p, [ideaClave(p.clave),
             p.txt ? t("p", p.txt) : null,
-            p.puntos ? el("ul", { class: "puntos" }, p.puntos.map(x => t("li", x))) : null,
+            p.puntos ? el("ul", { class: "puntos" + (zf ? " puntos-zonas" : "") }, lis) : null,
             p.svg ? el("div", { class: "figura", html: p.svg, role: "img", "aria-label": p.alt || p.tit }) : null,
-            p.ficha ? marcaFicha(p.ficha, p.fichaTxt) : null]));
+            p.ficha ? marcaFicha(p.ficha, p.fichaTxt) : null], zf && zf.nodo));
+      }
       case "explica":
         return el("section", { class: "idea explica" }, p.sub ? el("p", { class: "eyebrow", text: p.sub }) : null, el("h2", { text: p.tit }),
           conFoto(p, [p.lead ? t("p", p.lead, { class: "lead" }) : null,
@@ -179,12 +185,55 @@
   function figura(f) {
     return el("figure", { class: "foto" }, el("img", { src: f.src, alt: f.alt, loading: "lazy", width: "600", height: "400" }), f.pie ? t("figcaption", f.pie) : null);
   }
-  function conFoto(p, cuerpo) {
-    const figs = p.foto ? figura(p.foto) : p.fotos ? el("div", { class: "fotos" }, p.fotos.map(figura)) : null;
+  function conFoto(p, cuerpo, propia) {
+    const figs = propia || (p.foto ? figura(p.foto) : p.fotos ? el("div", { class: "fotos" }, p.fotos.map(figura)) : null);
     if (!figs) return cuerpo;
     if (p.fotos && p.fotos.length > 2) { figs.classList.add("tira"); return [...cuerpo, figs]; } // tres o más: en fila, bajo el texto
     return el("div", { class: "duo" }, el("div", { class: "duo-txt" }, cuerpo), el("div", { class: "duo-fig" }, figs));
   }
+  // Foto con zonas: oscurece el resto y señala cada zona con un contorno animado y su explicación.
+  // Se recorre sola («Recorrer las zonas»), paso a paso o tocando una zona de la foto o de la lista.
+  let nZonas = 0;
+  function fotoZonas(z) {
+    const id = "mz" + (++nZonas), W = z.w || 1536, H = z.h || 1024;
+    const svg = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><defs><mask id="${id}"><rect width="${W}" height="${H}" fill="#fff"/><polygon class="zm-hueco" points="" fill="#000"/></mask></defs>` +
+      `<rect class="zm-velo" width="${W}" height="${H}" mask="url(#${id})"/>` +
+      z.areas.map((a, i) => `<polygon class="zm-area" data-i="${i}" points="${a.pts}"/>`).join("") +
+      z.areas.map((a, i) => `<g class="zm-num" data-i="${i}" transform="translate(${a.x} ${a.y})"><circle r="50"/><text text-anchor="middle" dy="17">${i + 1}</text></g>`).join("") + "</svg>";
+    const capa = el("div", { class: "zm-capa", html: svg });
+    const cap = el("div", { class: "zm-cap", "aria-live": "polite" }, t("p", z.ayuda || "Pulsa **Recorrer las zonas** o toca una zona."));
+    let activa = -1, timer = null;
+    const sig = el("button", { type: "button", class: "btn btn-sec", text: "Siguiente zona →" });
+    const play = el("button", { type: "button", class: "btn btn-primario", text: "▶ Recorrer las zonas" });
+    const api = { lis: [] };
+    api.ir = i => {
+      activa = i;
+      const q = s => Array.from(capa.querySelectorAll(s) || []);
+      q(".zm-area").forEach(n => n.classList[n.getAttribute("data-i") === String(i) ? "add" : "remove"]("activa"));
+      q(".zm-num").forEach(n => n.classList[n.getAttribute("data-i") === String(i) ? "add" : "remove"]("activa"));
+      const hueco = capa.querySelector(".zm-hueco");
+      if (hueco) hueco.setAttribute("points", i >= 0 ? z.areas[i].pts : "");
+      if (i >= 0) capa.classList.add("con-zona"); else capa.classList.remove("con-zona");
+      api.lis.forEach((li, k) => li.classList[k === i ? "add" : "remove"]("activa"));
+      if (i >= 0) cap.replaceChildren(el("p", { class: "zm-tit" }, el("span", { class: "zm-n", text: String(i + 1) }), z.areas[i].tit), t("p", z.areas[i].txt));
+    };
+    const parar = () => { if (timer) { clearInterval(timer); timer = null; play.textContent = "▶ Recorrer las zonas"; } };
+    sig.addEventListener("click", () => { parar(); api.ir((activa + 1) % z.areas.length); });
+    play.addEventListener("click", () => {
+      if (timer) return parar();
+      api.ir(0); play.textContent = "❚❚ Pausa";
+      timer = setInterval(() => { if (activa + 1 >= z.areas.length) { parar(); return; } api.ir(activa + 1); }, z.ms || 4000);
+    });
+    capa.addEventListener("click", e => {
+      const n = e.target && e.target.closest ? e.target.closest("[data-i]") : null;
+      if (n) { parar(); api.ir(parseInt(n.getAttribute("data-i"), 10)); }
+    });
+    api.nodo = el("figure", { class: "zonas-foto" },
+      el("div", { class: "zm-marco" }, el("img", { src: z.src, alt: z.alt, width: "1200", height: "800" }), capa),
+      el("div", { class: "doc-acciones" }, play, sig), cap, z.pie ? t("figcaption", z.pie) : null);
+    return api;
+  }
+
   // Pantalla «documento»: un vale, un albarán o una etiqueta con sus partes numeradas, que se explican una a una.
   function documento(p) {
     const notas = p.notas || [];
